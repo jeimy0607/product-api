@@ -35,7 +35,7 @@ jobs:
         run: npx swagger-cli validate src/docs/openapi.yaml
 
       - name: Run tests (Jest + coverage)
-        run: npm test
+        run: npm run test:ci
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4

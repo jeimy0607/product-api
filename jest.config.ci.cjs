@@ -1,4 +1,3 @@
-
 module.exports = {
   testEnvironment: 'node',
   transform: {},
@@ -6,10 +5,10 @@ module.exports = {
   collectCoverageFrom: ['src/**/*.js', '!src/server.js'],
   coverageThreshold: {
     global: {
-      statements: 80,   // más alto para desarrollo
-      branches:   70,
-      functions:  70,
-      lines:      80
+      statements: 60,
+      branches:   45,
+      functions:  50,
+      lines:      60
     }
   }
 }

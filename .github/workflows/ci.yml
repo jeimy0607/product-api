@@ -16,8 +16,6 @@ jobs:
       BASIC_USER: admin
       BASIC_PASS: admin123
       USE_BCRYPT: false
-      # Si usaras hash:
-      # HASH_BCRYPT: ""
 
     steps:
       - name: Checkout

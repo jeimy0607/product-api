@@ -1,0 +1,45 @@
+name: CI - Product API
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      NODE_ENV: test
+      PORT: 3000
+      BASIC_USER: admin
+      BASIC_PASS: admin123
+      USE_BCRYPT: false
+      # Si usaras hash:
+      # HASH_BCRYPT: ""
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install deps (clean)
+        run: npm ci
+
+      - name: Validate OpenAPI (oas:lint)
+        run: npx swagger-cli validate src/docs/openapi.yaml
+
+      - name: Run tests (Jest + coverage)
+        run: npm test
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/

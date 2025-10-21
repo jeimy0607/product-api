@@ -1,0 +1,141 @@
+openapi: 3.0.3
+info:
+  title: Product API
+  version: 1.0.0
+  description: API para listar y administrar productos. Rutas de escritura protegidas con Basic Auth.
+
+servers:
+  - url: http://localhost:3000
+    description: Desarrollo
+
+tags:
+  - name: Products
+    description: Endpoints de productos
+
+paths:
+  /ping:
+    get:
+      summary: Health
+      responses:
+        '200':
+          description: ok
+
+  /api/products:
+    get:
+      tags: [Products]
+      summary: Listar productos
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+
+    post:
+      tags: [Products]
+      summary: Crear producto
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreate'
+            examples:
+              ejemplo:
+                value: { name: 'Mouse', price: 19.99, sku: 'MS001', stock: 5 }
+      responses:
+        '201':
+          description: Creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400': { description: Error de validación }
+        '401': { description: No autorizado }
+
+  /api/products/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: integer }
+        description: ID del producto
+    get:
+      tags: [Products]
+      summary: Obtener producto por id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404': { description: No encontrado }
+
+    put:
+      tags: [Products]
+      summary: Actualizar producto
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400': { description: Error de validación }
+        '401': { description: No autorizado }
+        '404': { description: No encontrado }
+
+    delete:
+      tags: [Products]
+      summary: Eliminar producto
+      security:
+        - basicAuth: []
+      responses:
+        '204': { description: Sin contenido }
+        '401': { description: No autorizado }
+        '404': { description: No encontrado }
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+
+  schemas:
+    Product:
+      type: object
+      properties:
+        id: { type: integer, example: 1 }
+        name: { type: string, example: 'Mouse' }
+        price: { type: number, format: float, example: 19.99 }
+        sku: { type: string, example: 'MS001' }
+        stock: { type: integer, example: 5 }
+        description: { type: string, example: '' }
+
+    ProductCreate:
+      type: object
+      required: [name, price, sku]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 120 }
+        price: { type: number, format: float, minimum: 0 }
+        sku: { type: string, minLength: 3, maxLength: 20 }
+        stock: { type: integer, minimum: 0, default: 0 }
+        description: { type: string }
+
+    ProductUpdate:
+      allOf:
+        - $ref: '#/components/schemas/ProductCreate'
